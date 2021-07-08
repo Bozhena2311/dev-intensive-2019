@@ -2,20 +2,20 @@ package ru.skillbranch.devintensive
 
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
-import android.widget.Button
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import ru.skillbranch.devintensive.extensions.hideKeyboard
 import ru.skillbranch.devintensive.models.Bender
 import java.util.*
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class MainActivity : AppCompatActivity(), View.OnClickListener, TextView.OnEditorActionListener {
 
 
     lateinit var benderImage : ImageView
@@ -63,6 +63,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         textTxt.text = benderObj.askQuestion()
 
         sendBtn.setOnClickListener(this)
+
+        messageEt.setOnEditorActionListener(this)
 
     }
 
@@ -162,7 +164,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         if(v?.id == R.id.iv_send){
             val (phrase, color) = benderObj.listenAnswer(messageEt.text.toString()
-                .lowercase(Locale.getDefault()))
+                .lowercase())
             messageEt.setText("")
             val (r, g, b) = color
             benderImage.setColorFilter(Color.rgb(r,g,b), PorterDuff.Mode.MULTIPLY)
@@ -172,4 +174,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    //при нажатии на которую будет происходить отправка сообщения в экземпляр класса Bender и скрытие клавиатуры
+
+    override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+        if(actionId == EditorInfo.IME_ACTION_DONE){
+            val (phrase, color) = benderObj.listenAnswer(messageEt.text.toString()
+                .lowercase())
+            messageEt.setText("")
+            val (r, g, b) = color
+            benderImage.setColorFilter(Color.rgb(r,g,b), PorterDuff.Mode.MULTIPLY)
+            textTxt.text = phrase
+            this.hideKeyboard()
+            return true
+        }
+        return false
+    }
+
+
+
 }
+

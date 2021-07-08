@@ -1,6 +1,8 @@
 package ru.skillbranch.devintensive.models
 
 import android.graphics.Typeface.NORMAL
+import android.widget.EditText
+import android.widget.TextView
 
 class Bender(var status: Status = Status.NORMAL, var question: Question = Question.NAME) {
 
@@ -14,18 +16,27 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
     }
 
     fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
-        return if (question.answers.contains(answer)) {
-            question = question.nextQuestion()
-            "Отлично - ты справился\n${question.question}" to status.color
-        } else if (status == Status.CRITICAL) {
-            status = status.nextStatus()
-            question = question.nextQuestion()
-            "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
-        } else{
-            status = status.nextStatus()
-            "Это неправильный ответ!\n${question.question}" to status.color
+        return when {
+            question.answers.contains(answer) -> {
+                question = question.nextQuestion()
+                "Отлично - ты справился\n${question.question}" to status.color
+            }
+            status == Status.CRITICAL -> {
+                status = status.nextStatus()
+                //question = question.nextQuestion()
+                "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
+            }
+            else -> {
+                status = status.nextStatus()
+                "Это неправильный ответ!\n${question.question}" to status.color
+            }
         }
     }
+
+    //Реализуй кнопку DONE в Software Keyboard (imeOptions="actionDone"),
+    // при нажатии на которую будет происходить отправка сообщения в экземпляр класса Bender и скрытие клавиатуры.
+    // Для этого реализуй OnEditorActionListener для EditText (et_message)
+
 
 
     enum class Status(val color: Triple<Int, Int, Int>) {
